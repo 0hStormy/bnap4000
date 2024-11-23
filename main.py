@@ -7,11 +7,43 @@ import select
 import termios
 import tty
 import time
+import json
+
 
 global cmdInput
 cmdInput = ""
 global paused
 paused = False
+
+def createConf():
+    newSave = {
+        "VolumeControl": 5,
+        "Library": "~/Music/"
+    }
+    with open("config.json", "w") as f:
+        f.write(str(newSave).replace("'", '"'))
+
+def read(key):
+    with open("config.json", "r") as f:
+        dat = f.read()
+        jsondat = json.loads(dat)
+        return jsondat[key]
+
+def write(key, value):
+    with open("config.json", "r") as f:
+        dat = f.read()
+    with open("config.json", "w") as f:
+        jsondat = json.loads(dat)
+        jsondat[key] = value
+        f.write(json.dumps(jsondat))
+
+def add(key, value):
+    with open("config.json", "r") as f:
+        dat = f.read()
+    with open("config.json", "w") as f:
+        jsondat = json.loads(dat)
+        jsondat[key] = jsondat[key].append(value)
+        f.write(json.dumps(jsondat))
 
 # Determine clear command
 def clear():
@@ -22,7 +54,7 @@ def clear():
     os.system(clearCMD)
 
 def reloadSongs():
-    songs = "/home/stormy/Music/Library/" # This is just an example
+    songs = read("Library") # This is just an example
 
     with open("songs.bnl", "w") as f:
         f.write("")
@@ -80,10 +112,10 @@ def play(file):
         if char == " ":
             paused = True
         if char == "=":
-            volume = volume + 5
+            volume = volume + read("VolumeControl")
             player.audio_set_volume(volume)
         if char == "-":
-            volume = volume - 5
+            volume = volume - read("VolumeControl")
             player.audio_set_volume(volume)
 
 def progressBar(current, end):
@@ -119,6 +151,8 @@ def renderUI(file, seconds, length):
 global volume
 volume = 50
 
+if os.path.isfile("config.json") is False:
+    createConf()
 reloadSongs()
 
 while True:
