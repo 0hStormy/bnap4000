@@ -100,5 +100,5 @@ def renderUI(file, seconds, length):
         progressBar(seconds, length)
 
 while True:
-    songs = "/home/stormy/Music/Library/Lemon Demon/Spirit Phone/"
+    songs = "/home/stormy/Music/Library/Lemon Demon/Spirit Phone/" # This is just an example
     play(f"{songs}{random.choice(os.listdir(songs))}")
