@@ -30,6 +30,7 @@ def play(file):
     currentpause = False
     length = player.get_length() / 1000
     renderUI(file, seconds, length)
+
     while True:
         if currentpause is False:
             counter = counter + 1
@@ -50,7 +51,7 @@ def play(file):
                 player.pause()
                 currentpause = False
             paused = False
-            exit(0)
+
         char = get_nonblocking_input()
         if char == "q":
             clear()
