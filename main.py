@@ -30,10 +30,11 @@ def reloadSongs():
     with open("songs.bnl", "a") as f:
         for path, subdirs, files in os.walk(songs):
             for name in files:
-                if name.endswith(".jpg"):
+                if name.endswith((".png", ".jpg", ".jpeg")):
                     continue
                 else:
                     f.write(f"{os.path.join(path, name)}[spl]")
+                    print(f"Cached {name}")
 
 
 def play(file):
