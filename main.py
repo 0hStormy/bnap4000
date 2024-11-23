@@ -26,8 +26,6 @@ def play(file):
     player.play()
     counter = 0
     seconds = 0
-    global volume
-    volume = 50
     paused = False
     currentpause = False
     length = player.get_length() / 1000
@@ -38,6 +36,7 @@ def play(file):
             length = player.get_length() / 1000
             seconds = seconds + 1
             counter = 0
+            global volume
             renderUI(file, seconds / 10, length)
         if seconds / 10 > length:
             print("Finished!")
@@ -51,6 +50,7 @@ def play(file):
                 player.pause()
                 currentpause = False
             paused = False
+            exit(0)
         char = get_nonblocking_input()
         if char == "q":
             clear()
@@ -99,6 +99,21 @@ def renderUI(file, seconds, length):
         print(f"Volume: {volume}")
         progressBar(seconds, length)
 
+global volume
+volume = 50
+
 while True:
-    songs = "/home/stormy/Music/Library/Lemon Demon/Spirit Phone/" # This is just an example
-    play(f"{songs}{random.choice(os.listdir(songs))}")
+    songs = "/home/stormy/Music/Library/" # This is just an example
+    extra = ""
+    while True:
+        try:
+            new = random.choice(os.listdir(f"{songs}{extra}"))
+        except NotADirectoryError:
+            break    
+        extra = extra + "/" + new
+        try:
+            if os.path.isdir(new) is True:
+                continue
+        except NotADirectoryError:
+            break
+    play(f"{songs}{extra}")
