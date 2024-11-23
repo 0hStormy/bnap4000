@@ -21,6 +21,21 @@ def clear():
         clearCMD = 'clear'
     os.system(clearCMD)
 
+def reloadSongs():
+    songs = "/home/stormy/Music/Library/" # This is just an example
+
+    with open("songs.bnl", "w") as f:
+        f.write("")
+
+    with open("songs.bnl", "a") as f:
+        for path, subdirs, files in os.walk(songs):
+            for name in files:
+                if name.endswith(".jpg"):
+                    continue
+                else:
+                    f.write(f"{os.path.join(path, name)}[spl]")
+
+
 def play(file):
     player = vlc.MediaPlayer(f'file://{file}')
     player.play()
@@ -103,18 +118,10 @@ def renderUI(file, seconds, length):
 global volume
 volume = 50
 
+reloadSongs()
+
 while True:
-    songs = "/home/stormy/Music/Library/" # This is just an example
-    extra = ""
-    while True:
-        try:
-            new = random.choice(os.listdir(f"{songs}{extra}"))
-        except NotADirectoryError:
-            break    
-        extra = extra + "/" + new
-        try:
-            if os.path.isdir(new) is True:
-                continue
-        except NotADirectoryError:
-            break
-    play(f"{songs}{extra}")
+    with open("songs.bnl", "r") as f:
+        fullList = f.read()
+        splitList = fullList.split("[spl]")
+    play(random.choice(splitList))
