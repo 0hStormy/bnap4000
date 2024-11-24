@@ -1,3 +1,12 @@
+#!/usr/bin/python3
+
+#############################################################
+#                                                           #
+# File created by 0hStormy                                  #
+#                                                           #
+#############################################################
+
+# Packages
 import vlc
 import os
 import platform
@@ -8,39 +17,45 @@ import termios
 import tty
 import time
 import json
-
+from colorama import Fore, Style
 
 global cmdInput
 cmdInput = ""
 global paused
 paused = False
+global homeFolder
+homeFolder = os.path.expanduser('~')
+
+# Color printing
+def cprint(text, color):
+    print(f"{color}{text}{colors.reset}")
 
 def createConf():
     newSave = {
         "VolumeControl": 5,
-        "Library": "~/Music/"
+        "Library": f"{homeFolder}/Music/"
     }
-    with open("config.json", "w") as f:
+    with open(f"{homeFolder}/.bnap", "w") as f:
         f.write(str(newSave).replace("'", '"'))
 
 def read(key):
-    with open("config.json", "r") as f:
+    with open(f"{homeFolder}/.bnap", "r") as f:
         dat = f.read()
         jsondat = json.loads(dat)
         return jsondat[key]
 
 def write(key, value):
-    with open("config.json", "r") as f:
+    with open(f"{homeFolder}/.bnap", "r") as f:
         dat = f.read()
-    with open("config.json", "w") as f:
+    with open(f"{homeFolder}/.bnap", "w") as f:
         jsondat = json.loads(dat)
         jsondat[key] = value
         f.write(json.dumps(jsondat))
 
 def add(key, value):
-    with open("config.json", "r") as f:
+    with open(f"{homeFolder}/.bnap", "r") as f:
         dat = f.read()
-    with open("config.json", "w") as f:
+    with open(f"{homeFolder}/.bnap", "w") as f:
         jsondat = json.loads(dat)
         jsondat[key] = jsondat[key].append(value)
         f.write(json.dumps(jsondat))
@@ -56,10 +71,10 @@ def clear():
 def reloadSongs():
     songs = read("Library") # This is just an example
 
-    with open("songs.bnl", "w") as f:
+    with open(f"{homeFolder}/.bnapsongs", "w") as f:
         f.write("")
 
-    with open("songs.bnl", "a") as f:
+    with open(f"{homeFolder}/.bnapsongs", "a") as f:
         for path, subdirs, files in os.walk(songs):
             for name in files:
                 if name.endswith((".png", ".jpg", ".jpeg")):
@@ -124,7 +139,7 @@ def progressBar(current, end):
     int(terminalX)
     int(terminalY)
     try:
-         print(("|" * round(int(current) / (end / terminalX))))
+         cprint(("|" * round(int(current) / (end / terminalX))), colors.purple)
     except ZeroDivisionError:
         print("...")
 
@@ -143,7 +158,7 @@ def get_nonblocking_input():
 
 def renderUI(file, seconds, length):
         clear()
-        print(f"Playing {os.path.basename(file)}")
+        cprint(f"Playing {os.path.basename(file)}", colors.green)
         print(f"{seconds}s/{round(length)}s")
         print(f"Volume: {volume}")
         progressBar(seconds, length)
@@ -151,12 +166,21 @@ def renderUI(file, seconds, length):
 global volume
 volume = 50
 
-if os.path.isfile("config.json") is False:
+# Init Vars
+class colors:
+    red = Fore.LIGHTRED_EX
+    green = Fore.LIGHTGREEN_EX
+    blue = Fore.LIGHTBLUE_EX
+    purple = Fore.MAGENTA
+    yellow = Fore.LIGHTYELLOW_EX
+    reset = Style.RESET_ALL
+
+if os.path.isfile(f"{homeFolder}/.bnap") is False:
     createConf()
 reloadSongs()
 
 while True:
-    with open("songs.bnl", "r") as f:
+    with open(f"{homeFolder}/.bnapsongs", "r") as f:
         fullList = f.read()
         splitList = fullList.split("[spl]")
     play(random.choice(splitList))
