@@ -33,7 +33,8 @@ def cprint(text, color):
 def createConf():
     newSave = {
         "VolumeControl": 5,
-        "Library": f"{homeFolder}/Music/"
+        "Library": f"{homeFolder}/Music/",
+        "QueueLength": 5
     }
     with open(f"{homeFolder}/.bnap", "w") as f:
         f.write(str(newSave).replace("'", '"'))
@@ -163,6 +164,22 @@ def renderUI(file, seconds, length):
         print(f"{seconds}s/{round(length)}s")
         print(f"Volume: {volume}")
         progressBar(seconds, length)
+        index = 0
+        for songs in queue:
+            index = index + 1
+            cprint(f"{index}: {os.path.basename(songs)}", colors.blue)
+
+def getSongs():
+    with open(f"{homeFolder}/.bnapsongs", "r") as f: 
+        fullList = f.read()
+        splitList = fullList.split("[spl]")
+        del splitList[-1]
+        return splitList
+
+def addToQueue(amount):
+    for i in range(amount):
+        splList = getSongs()
+        queue.append(random.choice(splList))
 
 global volume
 volume = 50
@@ -180,9 +197,11 @@ if os.path.isfile(f"{homeFolder}/.bnap") is False:
     createConf()
 reloadSongs()
 
+queue = []
+addToQueue(read("QueueLength"))
+
 while True:
-    with open(f"{homeFolder}/.bnapsongs", "r") as f:
-        fullList = f.read()
-        splitList = fullList.split("[spl]")
-        del splitList[-1]
-    play(random.choice(splitList))
+    current = queue[0]
+    queue.pop(0)
+    addToQueue(1)
+    play(current)
