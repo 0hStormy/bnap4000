@@ -8,6 +8,7 @@ fi
 
 # Install packages from pip
 python -m pip install python-vlc
+python -m pip install colorama
 
 echo Depending on where you install, the builder might ask for sudo permissions.
 
