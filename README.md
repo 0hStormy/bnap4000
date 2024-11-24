@@ -8,5 +8,7 @@ Currently only works on Unix like systems.
 # Installation
 
 `git clone https://github.com/0hStormy/bnap4000.git`
+
 `cd bnap4000`
+
 `sh install.sh /usr/local/bin/`
