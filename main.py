@@ -103,9 +103,10 @@ def play(file):
             global volume
             renderUI(file, seconds / 10, length)
         if seconds / 10 > length:
-            print("Finished!")
-            player.stop()
-            break
+            if seconds > 1:
+                print("Finished!")
+                player.stop()
+                break
         if paused is True:
             if currentpause is False:
                 player.pause()
@@ -183,4 +184,5 @@ while True:
     with open(f"{homeFolder}/.bnapsongs", "r") as f:
         fullList = f.read()
         splitList = fullList.split("[spl]")
+        del splitList[-1]
     play(random.choice(splitList))
