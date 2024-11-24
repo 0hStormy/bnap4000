@@ -34,7 +34,7 @@ def createConf():
     newSave = {
         "VolumeControl": 5,
         "Library": f"{homeFolder}/Music/",
-        "QueueLength": 5
+        "QueueLength": 16
     }
     with open(f"{homeFolder}/.bnap", "w") as f:
         f.write(str(newSave).replace("'", '"'))
