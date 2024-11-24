@@ -10,6 +10,6 @@ Assuming you have *nix system (Windows isn't supported), you can run the followi
 
 ```
 git clone https://github.com/0hStormy/bnap4000.git
-cd bnap4000`
+cd bnap4000
 sh install.sh /usr/local/bin/
 ```
