@@ -6,6 +6,8 @@ A simple music player made in made with true randomness in mind. Using libVLC as
 
 # Installation
 
+Assuming you have *nix system (Windows isn't supported), you can run the following:
+
 ```
 git clone https://github.com/0hStormy/bnap4000.git
 cd bnap4000`
