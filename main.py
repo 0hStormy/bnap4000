@@ -84,6 +84,16 @@ def reloadSongs():
                     f.write(f"{os.path.join(path, name)}[spl]")
                     print(f"Cached {name}")
 
+def cliParse():
+    if len(sys.argv) <= 1:
+        return
+    else:
+        if os.path.isfile(sys.argv[1]) is True:
+            play(sys.argv[1])
+            sys.exit(0)
+        else:
+            print("Invalid file")
+            sys.exit(1)
 
 def play(file):
     player = vlc.MediaPlayer(f'file://{file}')
@@ -198,6 +208,9 @@ if os.path.isfile(f"{homeFolder}/.bnap") is False:
 reloadSongs()
 
 queue = []
+
+cliParse()
+
 addToQueue(read("QueueLength"))
 
 while True:
