@@ -1,4 +1,6 @@
-# bnap4000
+![bnap4000](.github/full.svg)
+
+---
 
 A simple music player made in made with true randomness in mind. Using libVLC as a backend meaning you don't have to worry about if your music will play, all you need to worry about is getting homework done or working on your project.
 
