@@ -10,10 +10,17 @@ Badass New Audio Player 4000 (bnap4000) is a simple music player made in made wi
 
 # Installation
 
-Assuming you have *nix system (Windows isn't supported), you can run the following:
+Assuming you have *nix system (Windows isn't supported), you can run either
+
+## Stable
+Download the program from the [releases](https://github.com/0hStormy/bnap4000/releases) tab.
+
+## Unstable
+
+You can run the following:
 
 ```
 git clone https://github.com/0hStormy/bnap4000.git
 cd bnap4000
-sh install.sh /usr/local/bin/
+sh devinstall.sh /usr/local/bin/
 ```
