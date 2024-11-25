@@ -20,6 +20,7 @@ sudo rm $1/bnap
 # Move banp to /usr/local/bin
 sudo cp main.bin $1/bnap
 sudo chmod +x $1/bnap
+rm main.bin
 
 # Run
 bnap
