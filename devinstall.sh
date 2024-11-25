@@ -6,9 +6,11 @@ if [$1 = ""]; then
     exit 1
 fi
 
-# Install packages from pip
-python -m pip install python-vlc
-python -m pip install colorama
+# Start build
+nuitka --standalone --onefile main.py
+rm -rf main.dist/
+rm -rf main.onefile-build/
+rm -rf main.build/
 
 echo Depending on where you install, the builder might ask for sudo permissions.
 
@@ -16,7 +18,7 @@ echo Depending on where you install, the builder might ask for sudo permissions.
 sudo rm $1/bnap
 
 # Move banp to /usr/local/bin
-sudo cp main.py $1/bnap
+sudo cp main.bin $1/bnap
 sudo chmod +x $1/bnap
 
 # Run
