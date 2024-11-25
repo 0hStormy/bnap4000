@@ -24,3 +24,13 @@ git clone https://github.com/0hStormy/bnap4000.git
 cd bnap4000
 sh devinstall.sh /usr/local/bin/
 ```
+
+# Credits
+
+Thank you to the teams of people who made:
+
+* VideoLan for making [libVLC](https://www.videolan.org/vlc/libvlc.html)
+* oaubert for making [python-vlc](https://pypi.org/project/python-vlc/)
+* tartley for making [Colorama](https://pypi.org/project/colorama/)
+
+Without these projects, I couldn't have made this!
