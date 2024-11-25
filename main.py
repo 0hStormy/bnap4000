@@ -33,6 +33,7 @@ def cprint(text, color):
 def createConf():
     newConf = {
         "VolumeControl": 5,
+        "DefaultVolume": 50,
         "Library": f"{homeFolder}/Music/",
         "QueueLength": 16,
         "Loop": False
@@ -149,7 +150,10 @@ def play(file):
             player.audio_set_volume(volume)
         if char == "l":
             global looping
-            looping = True
+            if looping is False:
+                looping = True
+            else:
+                looping = False
 
 def progressBar(current, end):
     terminalY = os.get_terminal_size().lines
@@ -199,7 +203,7 @@ def addToQueue(amount):
         queue.append(random.choice(splList))
 
 global volume
-volume = 50
+volume = read("DefaultVolume")
 
 # Init Vars
 class colors:
