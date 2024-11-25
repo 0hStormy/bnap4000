@@ -31,18 +31,21 @@ def cprint(text, color):
     print(f"{color}{text}{colors.reset}")
 
 def createConf():
-    newSave = {
+    newConf = {
         "VolumeControl": 5,
         "Library": f"{homeFolder}/Music/",
-        "QueueLength": 16
+        "QueueLength": 16,
+        "Loop": False
     }
     with open(f"{homeFolder}/.bnap", "w") as f:
-        f.write(str(newSave).replace("'", '"'))
+        converted = json.dumps(newConf)
+        f.write(str(converted))
 
 def read(key):
     with open(f"{homeFolder}/.bnap", "r") as f:
         dat = f.read()
         jsondat = json.loads(dat)
+        print(jsondat)
         return jsondat[key]
 
 def write(key, value):
@@ -144,6 +147,9 @@ def play(file):
         if char == "-":
             volume = volume - read("VolumeControl")
             player.audio_set_volume(volume)
+        if char == "l":
+            global looping
+            looping = True
 
 def progressBar(current, end):
     terminalY = os.get_terminal_size().lines
@@ -173,6 +179,7 @@ def renderUI(file, seconds, length):
         cprint(f"Playing {os.path.basename(file)}", colors.green)
         print(f"{seconds}s/{round(length)}s")
         print(f"Volume: {volume}")
+        print(f"Looping: {looping}")
         progressBar(seconds, length)
         index = 0
         for songs in queue:
@@ -209,12 +216,16 @@ reloadSongs()
 
 queue = []
 
+global looping
+looping = read("Loop")
+
 cliParse()
 
 addToQueue(read("QueueLength"))
 
 while True:
     current = queue[0]
-    queue.pop(0)
-    addToQueue(1)
+    if looping is False:
+        queue.pop(0)
+        addToQueue(1)
     play(current)
