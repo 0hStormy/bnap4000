@@ -202,9 +202,6 @@ def addToQueue(amount):
         splList = getSongs()
         queue.append(random.choice(splList))
 
-global volume
-volume = read("DefaultVolume")
-
 # Init Vars
 class colors:
     red = Fore.LIGHTRED_EX
@@ -222,6 +219,9 @@ queue = []
 
 global looping
 looping = read("Loop")
+
+global volume
+volume = read("DefaultVolume")
 
 cliParse()
 
