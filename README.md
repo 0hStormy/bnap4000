@@ -28,7 +28,12 @@ Install dependencies:
 
 Fedora/RedHat
 ``` bash
-sudo dnf install pip3 python3 python3-devel gcc patchelf ccache vlc
+sudo dnf install pip3 python3 python3-devel gcc patchelf ccache vlc -y
+```
+
+Debian/Ubuntu
+``` bash
+sudo apt install python3-pip python3 python3-dev gcc patchelf ccache vlc -y
 ```
 
 Then run the following:
