@@ -24,13 +24,19 @@ For MacOS, I have an iMac in my garage I might use to add support, although it p
 
 ## Unstable
 
-1. Make sure to install everything in `requirements.txt` with your python package manager of choice system-wide or in venv
-2. Make sure you have VLC Media Player installed
-3. Then run the following:
+Install dependencies:
+
+Fedora/RedHat
+``` bash
+sudo dnf install pip3 python3 python3-devel gcc patchelf ccache vlc
+```
+
+Then run the following:
 
 ```
 git clone https://github.com/0hStormy/bnap4000.git
 cd bnap4000
+pip3 install -r requirements.txt
 sh devinstall.sh /usr/local/bin/
 ```
 
