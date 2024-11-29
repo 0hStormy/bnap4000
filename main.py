@@ -12,12 +12,17 @@ import os
 import platform
 import random
 import sys
-import select
-import termios
-import tty
 import time
 import json
 from colorama import Fore, Style
+
+# Check what modules to use for input
+if platform.system() == "Windows": # Windows
+    import msvcrt
+else: # Posix
+    import select
+    import termios
+    import tty
 
 global cmdInput
 cmdInput = ""
@@ -81,7 +86,7 @@ def reloadSongs():
     with open(f"{homeFolder}/.bnapsongs", "a") as f:
         for path, subdirs, files in os.walk(songs):
             for name in files:
-                if name.endswith((".png", ".jpg", ".jpeg")):
+                if name.endswith((".png", ".jpg", ".jpeg", ".ini")):
                     continue
                 else:
                     f.write(f"{os.path.join(path, name)}[spl]")
@@ -98,10 +103,16 @@ def cliParse():
             sys.exit(1)
 
 def play(file):
-    player = vlc.MediaPlayer(f'file://{file}')
+    if platform.system() == "Windows":
+        prefix = ""
+    else: # Posix
+        prefix = "file://"
+    player = vlc.MediaPlayer(f'{prefix}{file}')
     player.play()
     counter = 0
     seconds = 0
+    interval = 0.1
+    nextTime = time.time() + interval
     paused = False
     currentpause = False
     length = player.get_length() / 1000
@@ -136,7 +147,6 @@ def play(file):
         if char == "z":
             player.stop()
             print("Choosing new song...")
-            time.sleep(0.25)
             return
         if char == " ":
             paused = True
@@ -152,6 +162,8 @@ def play(file):
                 looping = True
             else:
                 looping = False
+        time.sleep(max(0, nextTime - time.time()))
+        nextTime += interval
 
 def progressBar(current, end):
     terminalY = os.get_terminal_size().lines
@@ -164,16 +176,20 @@ def progressBar(current, end):
         print("...")
 
 def get_nonblocking_input():
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setcbreak(fd)
-        ready, _, _ = select.select([sys.stdin], [], [], 0.1)
-        if ready:
-            return sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return None
+    if platform.system() == "Windows": # Windows
+        if msvcrt.kbhit():
+            return msvcrt.getch().decode("utf-8")
+    else: # Posix
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setcbreak(fd)
+            ready, _, _ = select.select([sys.stdin], [], [], 0.1)
+            if ready:
+                return sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return None
 
 
 def renderUI(file, seconds, length):
