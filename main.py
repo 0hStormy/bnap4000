@@ -46,7 +46,6 @@ def read(key):
     with open(f"{homeFolder}/.bnap", "r") as f:
         dat = f.read()
         jsondat = json.loads(dat)
-        print(jsondat)
         return jsondat[key]
 
 def write(key, value):
@@ -86,7 +85,6 @@ def reloadSongs():
                     continue
                 else:
                     f.write(f"{os.path.join(path, name)}[spl]")
-                    print(f"Cached {name}")
 
 def cliParse():
     if len(sys.argv) <= 1:
