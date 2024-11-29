@@ -15,7 +15,7 @@ Assuming you have *nix system (Windows isn't supported), you can run either
 ## Stable
 
 1. Make sure you have VLC installed, you can get it from https://www.videolan.org/vlc/ or through your package manager such as `apt` or `winget`
-Download the program from the [releases](https://github.com/0hStormy/bnap4000/releases) tab.
+2. Download the program from the [releases](https://github.com/0hStormy/bnap4000/releases) tab.
 
 * Linux has the highest support level since it's what I develop on
 * Windows has moderate support since I have a virtual machine ready for development
