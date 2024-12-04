@@ -1,21 +1,39 @@
 ![bnap4000](.github/full.svg)
 
+<p align="center">
+    <img alt="GitHub Release" class="badge" src="https://img.shields.io/github/v/release/0hstormy/bnap4000">
+    <img alt="GitHub last commit" class="badge" src="https://img.shields.io/github/last-commit/0hstormy/bnap4000">
+    <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/0hstormy/bnap4000">
+</p>
 ---
 
 # Intro
 
 Badass New Audio Player 4000 (bnap4000) is a simple music player made in made with true randomness in mind. Using libVLC as a backend meaning you don't have to worry about if your music will play, all you need to worry about is getting homework done or working on your project.
 
-![bnap4000](.github/player.png)
+## Features
+
+* Lightweight
+* Runs in your terminal
+* Great file compatibility
+* Chooses songs randomly
+* Single file playback mode
+* Cross-platform on Linux and Windows (MacOS too if built yourself)
+
+## Demo
+
+![bnap4000](.github/demo.gif)
 
 # Installation
 
-Assuming you have *nix system (Windows isn't supported), you can run either
+Now that you think that this project is pretty cool, let's install the dang thing!
 
 ## Stable
 
 1. Make sure you have VLC installed, you can get it from https://www.videolan.org/vlc/ or through your package manager such as `apt` or `winget`
 2. Download the program from the [releases](https://github.com/0hStormy/bnap4000/releases) tab.
+
+    If you're on Linux make sure to install VLC as a system package so bnap4000 can access libraries!
 
 * Linux has the highest support level since it's what I develop on
 * Windows has moderate support since I have a virtual machine ready for development
@@ -23,7 +41,7 @@ Assuming you have *nix system (Windows isn't supported), you can run either
 
 ## Unstable
 
-Make sure you have VLC installed, you can get it from https://www.videolan.org/vlc/ or through your package manager such as `apt` or `winget`. also make sure you have [Python](https://python.org) installed.
+Make sure you have VLC installed, you can get it from https://www.videolan.org/vlc/ or through your package manager such as `apt` or `winget`. Also make sure you have [Python](https://python.org) with `pip` installed.
 
 Install dependencies:
 
@@ -42,7 +60,7 @@ Then run the following on *nix:
 ```
 git clone https://github.com/0hStormy/bnap4000.git
 cd bnap4000
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt # pip command may differ between distro and OS.
 sh devinstall.sh /usr/local/bin/
 ```
 
