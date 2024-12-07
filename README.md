@@ -74,7 +74,7 @@ pip install -r requirements.txt
 nuitka --standalone --onefile main.py
 ```
 
-# Controls
+# Default Keybinds
 
 * `Z` to skip song
 * `-` to lower volume
