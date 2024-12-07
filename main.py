@@ -41,30 +41,36 @@ def createConf():
         "DefaultVolume": 50,
         "Library": f"{homeFolder}/Music/",
         "QueueLength": 16,
-        "Loop": False
+        "Loop": False,
+        "skipKey": "z",
+        "pauseKey": " ",
+        "volUpKey": "=",
+        "volDownKey": "-",
+        "loopKey": "l",
+        "exitKey": "q"
     }
-    with open(f"{homeFolder}/.bnap", "w") as f:
-        converted = json.dumps(newConf)
+    with open(f"{homeFolder}/.bnap/config.json", "w") as f:
+        converted = json.dumps(newConf, indent=4)
         f.write(str(converted))
 
 def read(key):
-    with open(f"{homeFolder}/.bnap", "r") as f:
+    with open(f"{homeFolder}/.bnap/config.json", "r") as f:
         dat = f.read()
         jsondat = json.loads(dat)
         return jsondat[key]
 
 def write(key, value):
-    with open(f"{homeFolder}/.bnap", "r") as f:
+    with open(f"{homeFolder}/.bnap/config.json", "r") as f:
         dat = f.read()
-    with open(f"{homeFolder}/.bnap", "w") as f:
+    with open(f"{homeFolder}/.bnap/config.json", "w") as f:
         jsondat = json.loads(dat)
         jsondat[key] = value
         f.write(json.dumps(jsondat))
 
 def add(key, value):
-    with open(f"{homeFolder}/.bnap", "r") as f:
+    with open(f"{homeFolder}/.bnap/config.json", "r") as f:
         dat = f.read()
-    with open(f"{homeFolder}/.bnap", "w") as f:
+    with open(f"{homeFolder}/.bnap/config.json", "w") as f:
         jsondat = json.loads(dat)
         jsondat[key] = jsondat[key].append(value)
         f.write(json.dumps(jsondat))
@@ -80,10 +86,10 @@ def clear():
 def reloadSongs():
     songs = read("Library") # This is just an example
 
-    with open(f"{homeFolder}/.bnapsongs", "w") as f:
+    with open(f"{homeFolder}/.bnap/songs", "w") as f:
         f.write("")
 
-    with open(f"{homeFolder}/.bnapsongs", "a") as f:
+    with open(f"{homeFolder}/.bnap/songs", "a") as f:
         for path, subdirs, files in os.walk(songs):
             for name in files:
                 if name.endswith((".png", ".jpg", ".jpeg", ".ini")):
@@ -141,22 +147,22 @@ def play(file):
             paused = False
 
         char = get_nonblocking_input()
-        if char == "q":
+        if char == keybinds.exitKey:
             clear()
             sys.exit(0)
-        if char == "z":
+        if char == keybinds.skip:
             player.stop()
             print("Choosing new song...")
             return
-        if char == " ":
+        if char == keybinds.pause:
             paused = True
-        if char == "=":
+        if char == keybinds.volUp:
             volume = volume + read("VolumeControl")
             player.audio_set_volume(volume)
-        if char == "-":
+        if char == keybinds.volDown:
             volume = volume - read("VolumeControl")
             player.audio_set_volume(volume)
-        if char == "l":
+        if char == keybinds.loop:
             global looping
             if looping is False:
                 looping = True
@@ -205,7 +211,7 @@ def renderUI(file, seconds, length):
             cprint(f"{index}: {os.path.basename(songs)}", colors.blue)
 
 def getSongs():
-    with open(f"{homeFolder}/.bnapsongs", "r") as f: 
+    with open(f"{homeFolder}/.bnap/songs", "r") as f: 
         fullList = f.read()
         splitList = fullList.split("[spl]")
         del splitList[-1]
@@ -216,6 +222,12 @@ def addToQueue(amount):
         splList = getSongs()
         queue.append(random.choice(splList))
 
+# Create config
+if os.path.isfile(f"{homeFolder}/.bnap/config.json") is False:
+    if os.path.isdir(f"{homeFolder}/.bnap/") is False:
+        os.makedirs(f"{homeFolder}/.bnap/")
+    createConf()
+
 # Init Vars
 class colors:
     red = Fore.LIGHTRED_EX
@@ -225,8 +237,15 @@ class colors:
     yellow = Fore.LIGHTYELLOW_EX
     reset = Style.RESET_ALL
 
-if os.path.isfile(f"{homeFolder}/.bnap") is False:
-    createConf()
+class keybinds:
+    skip = read("skipKey")
+    pause = read("pauseKey")
+    volUp = read("volUpKey")
+    volDown = read("volDownKey")
+    loop = read("loopKey")
+    exitKey = read("exitKey")
+
+
 reloadSongs()
 
 queue = []
