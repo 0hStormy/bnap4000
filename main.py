@@ -222,13 +222,25 @@ def addToQueue(amount):
         splList = getSongs()
         queue.append(random.choice(splList))
 
-# Create config
-if os.path.isfile(f"{homeFolder}/.bnap/config.json") is False:
-    if os.path.isdir(f"{homeFolder}/.bnap/") is False:
-        os.makedirs(f"{homeFolder}/.bnap/")
-    createConf()
+def newUser():
+    clear()
+    cprint("Welcome to bnap400! Let's answer a couple questions to get started!", colors.purple)
+    cprint("The config file is located in ~/.bnap/config.json if you ever need to change something.", colors.purple)
+    musicFolder = input("Music library location (leave blank for default): ")
+    if musicFolder != "":
+        write("Library", musicFolder)
+        cprint(f"Set music library to {musicFolder}", colors.green)
+    else:
+        cprint(f"Set music library to {read("Library")}", colors.green)
+    defaultVolume = input("Default volume (0-100): ")
+    if defaultVolume != "":
+        write("DefaultVolume", int(defaultVolume))
+        cprint(f"Set default volume to {defaultVolume}%", colors.green)
+    else:
+        cprint(f"Set default volume to {read("DefaultVolume")}%", colors.green)
+    input("Setup complete! Press enter to start bnap4000.")
 
-# Init Vars
+# Init Colors
 class colors:
     red = Fore.LIGHTRED_EX
     green = Fore.LIGHTGREEN_EX
@@ -237,6 +249,14 @@ class colors:
     yellow = Fore.LIGHTYELLOW_EX
     reset = Style.RESET_ALL
 
+# Create config
+if os.path.isfile(f"{homeFolder}/.bnap/config.json") is False:
+    if os.path.isdir(f"{homeFolder}/.bnap/") is False:
+        os.makedirs(f"{homeFolder}/.bnap/")
+    createConf()
+    newUser()
+
+# Init Keybinds
 class keybinds:
     skip = read("skipKey")
     pause = read("pauseKey")
