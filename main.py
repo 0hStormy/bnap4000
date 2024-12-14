@@ -14,6 +14,7 @@ import random
 import sys
 import time
 import json
+from pathlib import Path
 from colorama import Fore, Style
 
 # Check what modules to use for input
@@ -46,6 +47,7 @@ def createConf():
         "pauseKey": " ",
         "volUpKey": "=",
         "volDownKey": "-",
+        "restartKey": "x",
         "loopKey": "l",
         "exitKey": "q"
     }
@@ -122,6 +124,10 @@ def play(file):
     paused = False
     currentpause = False
     length = player.get_length() / 1000
+
+    file = os.path.basename(file)
+    file = Path(file).stem
+
     renderUI(file, seconds, length)
 
     while True:
@@ -154,6 +160,10 @@ def play(file):
             player.stop()
             print("Choosing new song...")
             return
+        if char == keybinds.restart:
+            player.stop()
+            print("Restarting song")
+            return "restart"
         if char == keybinds.pause:
             paused = True
         if char == keybinds.volUp:
@@ -200,7 +210,7 @@ def get_nonblocking_input():
 
 def renderUI(file, seconds, length):
         clear()
-        cprint(f"Playing {os.path.basename(file)}", colors.green)
+        cprint(f"Playing {file}", colors.green)
         print(f"{seconds}s/{round(length)}s")
         print(f"Volume: {volume}")
         print(f"Looping: {looping}")
@@ -208,6 +218,7 @@ def renderUI(file, seconds, length):
         index = 0
         for songs in queue:
             index = index + 1
+            songs = Path(songs).stem
             cprint(f"{index}: {os.path.basename(songs)}", colors.blue)
 
 def getSongs():
@@ -262,6 +273,7 @@ class keybinds:
     pause = read("pauseKey")
     volUp = read("volUpKey")
     volDown = read("volDownKey")
+    restart = read("restartKey")
     loop = read("loopKey")
     exitKey = read("exitKey")
 
@@ -269,6 +281,7 @@ class keybinds:
 reloadSongs()
 
 queue = []
+endCode = ""
 
 global looping
 looping = read("Loop")
@@ -281,8 +294,9 @@ cliParse()
 addToQueue(read("QueueLength"))
 
 while True:
-    current = queue[0]
     if looping is False:
-        queue.pop(0)
-        addToQueue(1)
-    play(current)
+        if endCode != "restart":
+            current = queue[0]
+            queue.pop(0)
+            addToQueue(1)
+    endCode = play(current)
