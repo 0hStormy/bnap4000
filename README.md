@@ -79,6 +79,7 @@ nuitka --standalone --onefile main.py
 * `Z` to skip song
 * `-` to lower volume
 * `=` to make volume higher
+* `X` to restart the current song
 * `L` to toggle looping
 * `Q` to quit
 
