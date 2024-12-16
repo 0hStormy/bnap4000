@@ -139,8 +139,6 @@ def play(file):
             counter = 0
             global volume
             renderUI(file, seconds / 10, length)
-        else: 
-            renderUI(file, seconds / 10, length)
         if seconds / 10 > length:
             if seconds > 1:
                 print("Finished!")
