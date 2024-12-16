@@ -122,6 +122,7 @@ def play(file):
     interval = 0.1
     nextTime = time.time() + interval
     paused = False
+    global currentpause
     currentpause = False
     length = player.get_length() / 1000
 
@@ -138,6 +139,8 @@ def play(file):
             counter = 0
             global volume
             renderUI(file, seconds / 10, length)
+        else: 
+            renderUI(file, seconds / 10, length)
         if seconds / 10 > length:
             if seconds > 1:
                 print("Finished!")
@@ -147,6 +150,7 @@ def play(file):
             if currentpause is False:
                 player.pause()
                 currentpause = True
+                renderUI(file, seconds / 10, length)
             else:
                 player.pause()
                 currentpause = False
@@ -182,14 +186,17 @@ def play(file):
         nextTime += interval
 
 def progressBar(current, end):
-    terminalY = os.get_terminal_size().lines
     terminalX = os.get_terminal_size().columns
     int(terminalX)
-    int(terminalY)
     try:
-         cprint(("|" * round(int(current) / (end / terminalX))), colors.purple)
+        progressNum = round(int(current) / (end / terminalX))
+        print((f"{colors.purple}󰝤" * progressNum ) + (f"{colors.reset}󰝤" * (terminalX - progressNum)))
     except ZeroDivisionError:
         print("...")
+
+def drawLine():
+    terminalX = os.get_terminal_size().columns
+    print("" * terminalX)
 
 def get_nonblocking_input():
     if platform.system() == "Windows": # Windows
@@ -210,16 +217,25 @@ def get_nonblocking_input():
 
 def renderUI(file, seconds, length):
         clear()
-        cprint(f"Playing {file}", colors.green)
-        print(f"{seconds}s/{round(length)}s")
-        print(f"Volume: {volume}")
-        print(f"Looping: {looping}")
+        global currentpause
+        if currentpause is True:
+            pauseIcon = "󰐊"
+        else:
+            pauseIcon = "󰏤"
+        cprint(f" Song: {file}", colors.green)
+        print(f"{pauseIcon} {seconds}s/{round(length)}s")
+        print(f"󰕾 Volume: {volume}")
+        print(f"󱃔 Looping: {looping}")
+        drawLine()
         progressBar(seconds, length)
+        drawLine()
         index = 0
+        print("󱕱 Queue:")
         for songs in queue:
             index = index + 1
             songs = Path(songs).stem
-            cprint(f"{index}: {os.path.basename(songs)}", colors.blue)
+            cprint(f"   {index}: {os.path.basename(songs)}", colors.blue)
+        drawLine()
 
 def getSongs():
     with open(f"{homeFolder}/.bnap/songs", "r") as f: 
