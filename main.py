@@ -31,10 +31,14 @@ global paused
 paused = False
 global homeFolder
 homeFolder = os.path.expanduser('~')
+global renderedLines
+renderedLines = 0
 
 # Color printing
 def cprint(text, color):
     print(f"{color}{text}{colors.reset}")
+    global renderedLines
+    renderedLines = renderedLines + 1
 
 def createConf():
     newConf = {
@@ -42,6 +46,7 @@ def createConf():
         "DefaultVolume": 50,
         "Library": f"{homeFolder}/Music/",
         "QueueLength": 16,
+        "NerdFontSupport": False,
         "Loop": False,
         "skipKey": "z",
         "pauseKey": " ",
@@ -84,6 +89,8 @@ def clear():
     else:
         clearCMD = 'clear'
     os.system(clearCMD)
+    global renderedLines
+    renderedLines = 0
 
 def reloadSongs():
     songs = read("Library") # This is just an example
@@ -188,13 +195,13 @@ def progressBar(current, end):
     int(terminalX)
     try:
         progressNum = round(int(current) / (end / terminalX))
-        print((f"{colors.purple}󰝤" * progressNum ) + (f"{colors.reset}󰝤" * (terminalX - progressNum)))
+        print((f"{colors.purple}{icons.square}" * progressNum ) + (f"{colors.reset}{icons.square}" * (terminalX - progressNum)))
     except ZeroDivisionError:
         print("...")
 
 def drawLine():
     terminalX = os.get_terminal_size().columns
-    print("" * terminalX)
+    print(icons.line * terminalX)
 
 def get_nonblocking_input():
     if platform.system() == "Windows": # Windows
@@ -217,18 +224,18 @@ def renderUI(file, seconds, length):
         clear()
         global currentpause
         if currentpause is True:
-            pauseIcon = "󰐊"
+            pauseIcon = icons.paused
         else:
-            pauseIcon = "󰏤"
-        cprint(f" Song: {file}", colors.green)
-        print(f"{pauseIcon} {seconds}s/{round(length)}s")
-        print(f"󰕾 Volume: {volume}")
-        print(f"󱃔 Looping: {looping}")
+            pauseIcon = icons.unpaused
+        cprint(f"{icons.musicNote}Song: {file}", colors.green)
+        print(f"{pauseIcon}{seconds}s/{round(length)}s")
+        print(f"{icons.vol}Volume: {volume}")
+        print(f"{icons.loop}Looping: {looping}")
         drawLine()
         progressBar(seconds, length)
         drawLine()
         index = 0
-        print("󱕱 Queue:")
+        print(f"{icons.queue}Queue:")
         for songs in queue:
             index = index + 1
             songs = Path(songs).stem
@@ -236,7 +243,7 @@ def renderUI(file, seconds, length):
         drawLine()
 
 def getSongs():
-    with open(f"{homeFolder}/.bnap/songs", "r") as f: 
+    with open(f"{homeFolder}/.bnap/songs", "r") as f:
         fullList = f.read()
         splitList = fullList.split("[spl]")
         del splitList[-1]
@@ -263,6 +270,12 @@ def newUser():
         cprint(f"Set default volume to {defaultVolume}%", colors.green)
     else:
         cprint(f"Set default volume to {read("DefaultVolume")}%", colors.green)
+    nerdFont = input("Do you want Nerd Font icons? This requires a Nerd Font! (y/N): ")
+    if nerdFont == "y":
+        write("NerdFontSupport", True)
+        cprint("Set Nerd Font support on!", colors.green)
+    else:
+        cprint("Set Nerd Font support off!", colors.green)
     input("Setup complete! Press enter to start bnap4000.")
 
 # Init Colors
@@ -291,6 +304,25 @@ class keybinds:
     loop = read("loopKey")
     exitKey = read("exitKey")
 
+class icons:
+    if read("NerdFontSupport") is True:
+        paused = "󰐊 "
+        unpaused = "󰏤 "
+        musicNote = " "
+        vol = "󰕾 "
+        loop = "󱃔 "
+        queue = "󱕱 "
+        square = "󰝤"
+        line = ""
+    else:
+        paused = "|> "
+        unpaused = "|| "
+        musicNote = ""
+        vol = ""
+        loop = ""
+        queue = ""
+        square = "#"
+        line = "-"
 
 reloadSongs()
 
