@@ -46,6 +46,8 @@ Now that you think that this project is pretty cool, let's install the dang thin
 Make sure you have VLC installed, you can get it from https://www.videolan.org/vlc/ or through your package manager such as `apt` or `winget`. Also make sure you have [Python](https://python.org) with `pip` installed.
 If you want fancy icons in bnap4000, make sure to install and use a Nerd Font of your choice.
 
+**You'll need Python 3.11 or newer!**
+
 Install dependencies:
 
 Fedora/RedHat
@@ -73,8 +75,9 @@ For Windows:
 git clone https://github.com/0hStormy/bnap4000.git
 cd bnap4000
 pip install -r requirements.txt
-nuitka --standalone --onefile main.py
+py -m nuitka --standalone --onefile main.py # Only runs up to Python 3.12 currently.
 ```
+
 # Default Keybinds
 
 * `Z` to skip song
