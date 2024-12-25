@@ -33,6 +33,8 @@ global homeFolder
 homeFolder = os.path.expanduser('~')
 global renderedLines
 renderedLines = 0
+global openPrompt
+openPrompt = False
 
 # Color printing
 def cprint(text, color):
@@ -54,7 +56,8 @@ def createConf():
         "volDownKey": "-",
         "restartKey": "x",
         "loopKey": "l",
-        "exitKey": "q"
+        "exitKey": "q",
+        "streamKey": "n"
     }
     with open(f"{homeFolder}/.bnap/config.json", "w") as f:
         converted = json.dumps(newConf, indent=4)
@@ -118,10 +121,16 @@ def cliParse():
             sys.exit(1)
 
 def play(file):
-    if platform.system() == "Windows":
+    global netStream
+    if not file.startswith("https://"):
+        if platform.system() == "Windows":
+            prefix = ""
+        else: # Posix
+            prefix = "file://"
+        netStream = False
+    else:
         prefix = ""
-    else: # Posix
-        prefix = "file://"
+        netStream = True
     player = vlc.MediaPlayer(f'{prefix}{file}')
     player.play()
     counter = 0
@@ -133,29 +142,35 @@ def play(file):
     currentpause = False
     length = player.get_length() / 1000
 
-    file = os.path.basename(file)
-    file = Path(file).stem
+    if netStream is False:
+        file = os.path.basename(file)
+        file = Path(file).stem
+    else:
+        file = file.removeprefix("https://")
 
     renderUI(file, seconds, length)
 
     while True:
         if currentpause is False:
-            counter = counter + 1
-            length = player.get_length() / 1000
-            seconds = seconds + 1
-            counter = 0
+            if counter == 10:
+                counter = counter + 1
+                length = player.get_length() / 1000
+                seconds = seconds + 1
+                counter = 0
+                renderUI(file, seconds, length)
             global volume
-            renderUI(file, seconds / 10, length)
-        if seconds / 10 > length:
-            if seconds > 1:
-                print("Finished!")
-                player.stop()
-                break
+        if netStream is False:
+            if seconds > length:
+                if seconds > 5:
+                    print("Finished!")
+                    player.stop()
+                    break
         if paused is True:
+            print(paused, currentpause)
             if currentpause is False:
                 player.pause()
                 currentpause = True
-                renderUI(file, seconds / 10, length)
+                renderUI(file, seconds, length)
             else:
                 player.pause()
                 currentpause = False
@@ -178,17 +193,25 @@ def play(file):
         if char == keybinds.volUp:
             volume = volume + read("VolumeControl")
             player.audio_set_volume(volume)
+            renderUI(file, seconds, length)
         if char == keybinds.volDown:
             volume = volume - read("VolumeControl")
             player.audio_set_volume(volume)
+            renderUI(file, seconds, length)
+        if char == keybinds.streamKey:
+            player.stop()
+            return "netStream"
         if char == keybinds.loop:
             global looping
             if looping is False:
                 looping = True
             else:
                 looping = False
+            renderUI(file, seconds, length)
+
         time.sleep(max(0, nextTime - time.time()))
         nextTime += interval
+        counter = counter + 1
 
 def progressBar(current, end):
     terminalX = os.get_terminal_size().columns
@@ -227,7 +250,11 @@ def renderUI(file, seconds, length):
             pauseIcon = icons.paused
         else:
             pauseIcon = icons.unpaused
-        cprint(f"{icons.musicNote}Song: {file}", colors.green)
+        global netStream
+        if netStream is True:
+            cprint(f"{icons.musicNote}Station: {file}", colors.green)
+        else:
+            cprint(f"{icons.musicNote}Song: {file}", colors.green)
         print(f"{pauseIcon}{seconds}s/{round(length)}s")
         print(f"{icons.vol}Volume: {volume}")
         print(f"{icons.loop}Looping: {looping}")
@@ -303,6 +330,7 @@ class keybinds:
     restart = read("restartKey")
     loop = read("loopKey")
     exitKey = read("exitKey")
+    streamKey = read("streamKey")
 
 class icons:
     if read("NerdFontSupport") is True:
@@ -345,4 +373,6 @@ while True:
             current = queue[0]
             queue.pop(0)
             addToQueue(1)
+    if endCode == "netStream":
+        current = input("Internet Radio URL: ")
     endCode = play(current)
