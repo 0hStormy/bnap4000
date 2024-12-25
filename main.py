@@ -165,15 +165,6 @@ def play(file):
                     print("Finished!")
                     player.stop()
                     break
-        if paused is True:
-            print(paused, currentpause)
-            if currentpause is False:
-                player.pause()
-                currentpause = True
-                renderUI(file, seconds, length)
-            else:
-                player.pause()
-                currentpause = False
             paused = False
 
         char = get_nonblocking_input()
@@ -190,6 +181,16 @@ def play(file):
             return "restart"
         if char == keybinds.pause:
             paused = True
+            if paused is True:
+                print(paused, currentpause)
+                if currentpause is False:
+                    player.pause()
+                    currentpause = True
+                else:
+                    player.pause()
+                    currentpause = False
+                renderUI(file, seconds, length)
+            paused = False
         if char == keybinds.volUp:
             volume = volume + read("VolumeControl")
             player.audio_set_volume(volume)
