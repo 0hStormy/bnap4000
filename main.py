@@ -161,7 +161,7 @@ def play(file):
             global volume
         if netStream is False:
             if seconds > length:
-                if seconds > 5:
+                if seconds > 2:
                     print("Finished!")
                     player.stop()
                     break
