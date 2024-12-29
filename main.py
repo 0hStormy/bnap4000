@@ -210,9 +210,10 @@ def play(file):
                 looping = False
             renderUI(file, seconds, length)
 
-        time.sleep(max(0, nextTime - time.time()))
-        nextTime += interval
-        counter = counter + 1
+        if currentpause is False:
+            time.sleep(max(0, nextTime - time.time()))
+            nextTime += interval
+            counter = counter + 1
 
 def progressBar(current, end):
     terminalX = os.get_terminal_size().columns
