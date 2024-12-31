@@ -264,7 +264,7 @@ def renderUI(file, seconds, length, playbackMode):
         progressBar(seconds, length)
         drawLine()
         index = 0
-        if playbackMode == "normal":
+        if playbackMode != "direct":
             print(f"{icons.queue}Queue:")
             for songs in queue:
                 index = index + 1
