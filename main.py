@@ -114,13 +114,13 @@ def cliParse():
         return
     else:
         if os.path.isfile(sys.argv[1]) is True:
-            play(sys.argv[1])
+            play(sys.argv[1], "direct")
             sys.exit(0)
         else:
             print("Invalid file")
             sys.exit(1)
 
-def play(file):
+def play(file, playbackMode="normal"):
     global netStream
     if not file.startswith("https://"):
         if platform.system() == "Windows":
@@ -148,7 +148,7 @@ def play(file):
     else:
         file = file.removeprefix("https://")
 
-    renderUI(file, seconds, length)
+    renderUI(file, seconds, length, playbackMode)
 
     while True:
         if currentpause is False:
@@ -157,7 +157,7 @@ def play(file):
                 length = player.get_length() / 1000
                 seconds = seconds + 1
                 counter = 0
-                renderUI(file, seconds, length)
+                renderUI(file, seconds, length, playbackMode)
             global volume
         if netStream is False:
             if seconds > length:
@@ -189,16 +189,16 @@ def play(file):
                 else:
                     player.pause()
                     currentpause = False
-                renderUI(file, seconds, length)
+                renderUI(file, seconds, length, playbackMode)
             paused = False
         if char == keybinds.volUp:
             volume = volume + read("VolumeControl")
             player.audio_set_volume(volume)
-            renderUI(file, seconds, length)
+            renderUI(file, seconds, length, playbackMode)
         if char == keybinds.volDown:
             volume = volume - read("VolumeControl")
             player.audio_set_volume(volume)
-            renderUI(file, seconds, length)
+            renderUI(file, seconds, length, playbackMode)
         if char == keybinds.streamKey:
             player.stop()
             return "netStream"
@@ -226,7 +226,7 @@ def progressBar(current, end):
 
 def drawLine():
     terminalX = os.get_terminal_size().columns
-    print(icons.line * terminalX)
+    print(f"{colors.white}{icons.line * terminalX}")
 
 def get_nonblocking_input():
     if platform.system() == "Windows": # Windows
@@ -245,7 +245,7 @@ def get_nonblocking_input():
         return None
 
 
-def renderUI(file, seconds, length):
+def renderUI(file, seconds, length, playbackMode):
         clear()
         global currentpause
         if currentpause is True:
@@ -264,12 +264,13 @@ def renderUI(file, seconds, length):
         progressBar(seconds, length)
         drawLine()
         index = 0
-        print(f"{icons.queue}Queue:")
-        for songs in queue:
-            index = index + 1
-            songs = Path(songs).stem
-            cprint(f"   {index}: {os.path.basename(songs)}", colors.blue)
-        drawLine()
+        if playbackMode == "normal":
+            print(f"{icons.queue}Queue:")
+            for songs in queue:
+                index = index + 1
+                songs = Path(songs).stem
+                cprint(f"   {index}: {os.path.basename(songs)}", colors.blue)
+            drawLine()
 
 def getSongs():
     with open(f"{homeFolder}/.bnap/songs", "r") as f:
@@ -314,6 +315,7 @@ class colors:
     blue = Fore.LIGHTBLUE_EX
     purple = Fore.MAGENTA
     yellow = Fore.LIGHTYELLOW_EX
+    white = Fore.WHITE
     reset = Style.RESET_ALL
 
 # Create config
@@ -370,6 +372,7 @@ cliParse()
 addToQueue(read("QueueLength"))
 
 while True:
+    mode = "normal"
     if looping is False:
         if endCode != "restart":
             current = queue[0]
@@ -377,4 +380,5 @@ while True:
             addToQueue(1)
     if endCode == "netStream":
         current = input("Internet Radio URL: ")
-    endCode = play(current)
+        mode = "net"
+    endCode = play(current, mode)
