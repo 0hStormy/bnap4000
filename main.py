@@ -14,7 +14,6 @@ import random
 import sys
 import time
 import json
-import subprocess
 from pathlib import Path
 from colorama import Fore, Style
 
