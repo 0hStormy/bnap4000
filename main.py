@@ -14,6 +14,7 @@ import random
 import sys
 import time
 import json
+import subprocess
 from pathlib import Path
 from colorama import Fore, Style
 
@@ -317,6 +318,13 @@ class colors:
     yellow = Fore.LIGHTYELLOW_EX
     white = Fore.WHITE
     reset = Style.RESET_ALL
+
+# Check if VLC is installed
+try:
+    subprocess.call(["vlc"])
+except FileNotFoundError:
+    cprint("You do not have VLC installed. Please install either of those and re-run bnap4000.", colors.red)
+    exit(1)
 
 # Create config
 if os.path.isfile(f"{homeFolder}/.bnap/config.json") is False:
