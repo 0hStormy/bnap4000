@@ -45,3 +45,4 @@ main.dist/select.so
 main.dist/termios.so
 main.dist/unicodedata.so
 main.dist/zlib.so
+.venv/
