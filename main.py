@@ -319,13 +319,6 @@ class colors:
     white = Fore.WHITE
     reset = Style.RESET_ALL
 
-# Check if VLC is installed
-try:
-    subprocess.call(["vlc"])
-except FileNotFoundError:
-    cprint("You do not have VLC or libVLC libraries installed. Please install either of those and re-run bnap4000.", colors.red)
-    exit(1)
-
 # Create config
 if os.path.isfile(f"{homeFolder}/.bnap/config.json") is False:
     if os.path.isdir(f"{homeFolder}/.bnap/") is False:
