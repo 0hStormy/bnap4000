@@ -323,7 +323,7 @@ class colors:
 try:
     subprocess.call(["vlc"])
 except FileNotFoundError:
-    cprint("You do not have VLC installed. Please install either of those and re-run bnap4000.", colors.red)
+    cprint("You do not have VLC or libVLC libraries installed. Please install either of those and re-run bnap4000.", colors.red)
     exit(1)
 
 # Create config
