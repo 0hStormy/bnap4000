@@ -208,7 +208,7 @@ def play(file, playbackMode="normal"):
                 looping = True
             else:
                 looping = False
-            renderUI(file, seconds, length)
+            renderUI(file, seconds, length, playbackMode)
 
         if currentpause is False:
             time.sleep(max(0, nextTime - time.time()))
