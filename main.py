@@ -50,6 +50,7 @@ def createConf():
         "QueueLength": 16,
         "NerdFontSupport": False,
         "Loop": False,
+        "Locale": "en_US",
         "skipKey": "z",
         "pauseKey": " ",
         "volUpKey": "=",
@@ -68,6 +69,15 @@ def read(key):
         dat = f.read()
         jsondat = json.loads(dat)
         return jsondat[key]
+
+def locale(key):
+    try:
+        with open(f"lang/{read("Locale")}.json", "r") as f:
+            dat = f.read()
+            jsondat = json.loads(dat)
+            return jsondat[key]
+    except KeyError:
+        return "Missing Locale, something has probably gone very wrong!"
 
 def write(key, value):
     with open(f"{homeFolder}/.bnap/config.json", "r") as f:
@@ -173,11 +183,9 @@ def play(file, playbackMode="normal"):
             sys.exit(0)
         if char == keybinds.skip:
             player.stop()
-            print("Choosing new song...")
             return
         if char == keybinds.restart:
             player.stop()
-            print("Restarting song")
             return "restart"
         if char == keybinds.pause:
             paused = True
@@ -254,18 +262,18 @@ def renderUI(file, seconds, length, playbackMode):
             pauseIcon = icons.unpaused
         global netStream
         if netStream is True:
-            cprint(f"{icons.musicNote}Station: {file}", colors.green)
+            cprint(f"{icons.musicNote}{locale("ui.station")}: {file}", colors.green)
         else:
-            cprint(f"{icons.musicNote}Song: {file}", colors.green)
+            cprint(f"{icons.musicNote}{locale("ui.song")}: {file}", colors.green)
         print(f"{pauseIcon}{seconds}s/{round(length)}s")
-        print(f"{icons.vol}Volume: {volume}")
-        print(f"{icons.loop}Looping: {looping}")
+        print(f"{icons.vol}{locale("ui.volume")}: {volume}")
+        print(f"{icons.loop}{locale("ui.looping")}: {looping}")
         drawLine()
         progressBar(seconds, length)
         drawLine()
         index = 0
         if playbackMode != "direct":
-            print(f"{icons.queue}Queue:")
+            print(f"{icons.queue}{locale("ui.queue")}:")
             for songs in queue:
                 index = index + 1
                 songs = Path(songs).stem
@@ -286,27 +294,27 @@ def addToQueue(amount):
 
 def newUser():
     clear()
-    cprint("Welcome to bnap400! Let's answer a couple questions to get started!", colors.purple)
-    cprint("The config file is located in ~/.bnap/config.json if you ever need to change something.", colors.purple)
-    musicFolder = input("Music library location (leave blank for default): ")
+    cprint(locale("welcome.welcome"), colors.purple)
+    cprint(locale("welcome.confignote"), colors.purple)
+    musicFolder = input(f"{locale("welcome.library")}: ")
     if musicFolder != "":
         write("Library", musicFolder)
-        cprint(f"Set music library to {musicFolder}", colors.green)
+        cprint(f"{locale("welcome.musLib")} {musicFolder}", colors.green)
     else:
-        cprint(f"Set music library to {read("Library")}", colors.green)
-    defaultVolume = input("Default volume (0-100): ")
+        cprint(f"{locale("welcome.musLib")}: {read("Library")}", colors.green)
+    defaultVolume = input(f"{locale("welcome.volume")}: ")
     if defaultVolume != "":
         write("DefaultVolume", int(defaultVolume))
-        cprint(f"Set default volume to {defaultVolume}%", colors.green)
+        cprint(f"{locale("welcome.newVol")} {defaultVolume}%", colors.green)
     else:
-        cprint(f"Set default volume to {read("DefaultVolume")}%", colors.green)
-    nerdFont = input("Do you want Nerd Font icons? This requires a Nerd Font! (y/N): ")
+        cprint(f"{locale("welcome.newVol")} {read("DefaultVolume")}%", colors.green)
+    nerdFont = input(f"{locale("welcome.nerdfont")}: ")
     if nerdFont == "y":
         write("NerdFontSupport", True)
-        cprint("Set Nerd Font support on!", colors.green)
+        cprint(locale("welcome.nerdOn"), colors.green)
     else:
-        cprint("Set Nerd Font support off!", colors.green)
-    input("Setup complete! Press enter to start bnap4000.")
+        cprint(locale("welcome.nerdOff"), colors.green)
+    input(locale("welcome.complete"))
 
 # Init Colors
 class colors:
@@ -379,6 +387,6 @@ while True:
             queue.pop(0)
             addToQueue(1)
     if endCode == "netStream":
-        current = input("Internet Radio URL: ")
+        current = input(f"{locale("ui.iradio")}: ")
         mode = "net"
     endCode = play(current, mode)

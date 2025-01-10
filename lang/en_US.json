@@ -1,0 +1,19 @@
+{
+    "ui.song": "Song",
+    "ui.station": "Station",
+    "ui.volume": "Volume",
+    "ui.looping": "Looping",
+    "ui.queue": "Queue",
+    "ui.iradio": "Internet Radio URL",
+
+    "welcome.welcome": "Welcome to bnap400! Let's answer a couple questions to get started!",
+    "welcome.confignote": "The config file is located in ~/.bnap/config.json if you ever need to change something.",
+    "welcome.library": "Music library location (leave blank for default)",
+    "welcome.musLib": "Set music library to:",
+    "welcome.volume": "Default volume (0-100)",
+    "welcome.newVol": "Set default volume to:",
+    "welcome.nerdfont": "Do you want Nerd Font icons? This requires a Nerd Font! (y/N)",
+    "welcome.nerdOn": "Set Nerd Font support on!",
+    "welcome.nerdOff": "Set Nerd Font support off!",
+    "welcome.complete": "Setup complete! Press enter to start bnap4000."
+}
