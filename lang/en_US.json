@@ -5,6 +5,7 @@
     "ui.looping": "Looping",
     "ui.queue": "Queue",
     "ui.iradio": "Internet Radio URL",
+    "ui.songSelect": "Song/Album Selector",
 
     "welcome.welcome": "Welcome to bnap400! Let's answer a couple questions to get started!",
     "welcome.confignote": "The config file is located in ~/.bnap/config.json if you ever need to change something.",

@@ -273,7 +273,7 @@ def songNav():
     cwd = read("Library")
     while True:
         clear()
-        cprint("Song/Album Selector", colors.green)
+        cprint(locale("ui.songSelect"), colors.green)
         drawLine()
         selectedAlbum = renderDir(cwd, dirIndex)
         drawLine()
