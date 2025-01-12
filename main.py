@@ -223,6 +223,7 @@ def play(file, playbackMode="normal"):
                 looping = True
             else:
                 looping = False
+            renderUI(file, seconds, length, playbackMode)
         if char == keybinds.navKey:
             paused = True
             currentpause = True
@@ -230,7 +231,6 @@ def play(file, playbackMode="normal"):
             songNav()
             currentpause = False
             player.play()
-        renderUI(file, seconds, length, playbackMode)
 
         if currentpause is False:
             time.sleep(max(0, nextTime - time.time()))
