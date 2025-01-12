@@ -72,7 +72,7 @@ def read(key):
 
 def locale(key):
     try:
-        with open(f"lang/{read("Locale")}.json", "r") as f:
+        with open(f"{Path(__file__).parent / "lang" / read("Locale")}.json", "r") as f:
             dat = f.read()
             jsondat = json.loads(dat)
             return jsondat[key]
@@ -129,6 +129,13 @@ def cliParse():
         else:
             print("Invalid file")
             sys.exit(1)
+
+def startswithnum(num):
+    try:
+        num = int(num)
+        return True
+    except ValueError:
+        return False
 
 def play(file, playbackMode="normal"):
     global netStream
@@ -216,7 +223,14 @@ def play(file, playbackMode="normal"):
                 looping = True
             else:
                 looping = False
-            renderUI(file, seconds, length, playbackMode)
+        if char == keybinds.navKey:
+            paused = True
+            currentpause = True
+            player.stop()
+            songNav()
+            currentpause = False
+            player.play()
+        renderUI(file, seconds, length, playbackMode)
 
         if currentpause is False:
             time.sleep(max(0, nextTime - time.time()))
@@ -236,22 +250,62 @@ def drawLine():
     terminalX = os.get_terminal_size().columns
     print(f"{colors.white}{icons.line * terminalX}")
 
-def get_nonblocking_input():
-    if platform.system() == "Windows": # Windows
-        if msvcrt.kbhit():
-            return msvcrt.getch().decode("utf-8")
-    else: # Posix
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setcbreak(fd)
-            ready, _, _ = select.select([sys.stdin], [], [], 0.1)
-            if ready:
-                return sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return None
+def renderDir(dir, index):
+    try:
+        contents = os.listdir(dir)
+    except NotADirectoryError:
+        play(dir, "direct")
+    i = 0
+    for file in contents:
+        if file.endswith((".png", ".jpg", ".jpeg", ".ini")):
+                    continue
+        else:
+            if i == index:
+                cprint(f"{i + 1}: {file}", colors.blue)
+                selected = file
+            else:
+                cprint(f"{i + 1}: {file}", colors.white)
+            i = i + 1
+    return selected
 
+def songNav():
+    dirIndex = 0
+    cwd = read("Library")
+    while True:
+        clear()
+        cprint("Song/Album Selector", colors.green)
+        drawLine()
+        selectedAlbum = renderDir(cwd, dirIndex)
+        drawLine()
+        cmd = input(":")
+        if cmd == "q": # Quit
+            break
+
+        elif cmd == "": # Confirm
+            dirIndex = 0
+            cwd = cwd + f"/{selectedAlbum}"
+            
+        elif cmd == "..":
+            cwd = os.path.join(os.path.dirname(cwd), '..')
+
+        elif cmd == "pa":
+            global queue
+            queue = []
+            totalSongs = 0
+            contents = os.listdir(f"{cwd}/{selectedAlbum}/")
+            for file in contents:
+                if file.endswith((".png", ".jpg", ".jpeg", ".ini")):
+                    continue
+                else:
+                    totalSongs += 1
+                    queue.append(f"{cwd}/{selectedAlbum}/{file}")
+            queue.sort()
+            print(read("QueueLength") - totalSongs)
+            addToQueue(read("QueueLength") - totalSongs)
+            playLoop()
+
+        elif startswithnum(cmd):
+            dirIndex = (int(cmd) - 1)
 
 def renderUI(file, seconds, length, playbackMode):
         clear()
@@ -279,6 +333,22 @@ def renderUI(file, seconds, length, playbackMode):
                 songs = Path(songs).stem
                 cprint(f"   {index}: {os.path.basename(songs)}", colors.blue)
             drawLine()
+
+def get_nonblocking_input():
+    if platform.system() == "Windows": # Windows
+        if msvcrt.kbhit():
+            return msvcrt.getch().decode("utf-8")
+    else: # Posix
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setcbreak(fd)
+            ready, _, _ = select.select([sys.stdin], [], [], 0.1)
+            if ready:
+                return sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return None
 
 def getSongs():
     with open(f"{homeFolder}/.bnap/songs", "r") as f:
@@ -316,6 +386,20 @@ def newUser():
         cprint(locale("welcome.nerdOff"), colors.green)
     input(locale("welcome.complete"))
 
+def playLoop():
+    endCode = ""
+    while True:
+        mode = "normal"
+        if looping is False:
+            if endCode != "restart":
+                current = queue[0]
+                queue.pop(0)
+                addToQueue(1)
+        if endCode == "netStream":
+            current = input(f"{locale("ui.iradio")}: ")
+            mode = "net"
+        endCode = play(current, mode)
+
 # Init Colors
 class colors:
     red = Fore.LIGHTRED_EX
@@ -343,6 +427,7 @@ class keybinds:
     loop = read("loopKey")
     exitKey = read("exitKey")
     streamKey = read("streamKey")
+    navKey = "s"
 
 class icons:
     if read("NerdFontSupport") is True:
@@ -366,6 +451,7 @@ class icons:
 
 reloadSongs()
 
+global queue
 queue = []
 endCode = ""
 
@@ -379,14 +465,4 @@ cliParse()
 
 addToQueue(read("QueueLength"))
 
-while True:
-    mode = "normal"
-    if looping is False:
-        if endCode != "restart":
-            current = queue[0]
-            queue.pop(0)
-            addToQueue(1)
-    if endCode == "netStream":
-        current = input(f"{locale("ui.iradio")}: ")
-        mode = "net"
-    endCode = play(current, mode)
+playLoop()
