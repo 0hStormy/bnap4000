@@ -242,7 +242,7 @@ def progressBar(current, end):
     int(terminalX)
     try:
         progressNum = round(int(current) / (end / terminalX))
-        print((f"{colors.purple}{icons.square}" * progressNum ) + (f"{colors.reset}{icons.square}" * (terminalX - progressNum)))
+        print((f"{colors.purple}{icons.square}" * progressNum ) + (f"{colors.reset}" * (terminalX - progressNum)))
     except ZeroDivisionError:
         print("...")
 
@@ -407,7 +407,7 @@ class colors:
     blue = Fore.LIGHTBLUE_EX
     purple = Fore.MAGENTA
     yellow = Fore.LIGHTYELLOW_EX
-    white = Fore.WHITE
+    white = Style.RESET_ALL
     reset = Style.RESET_ALL
 
 # Create config
