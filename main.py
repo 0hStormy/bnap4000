@@ -36,6 +36,7 @@ renderedLines = 0
 global openPrompt
 openPrompt = False
 
+
 # Color printing
 def cprint(text, color):
     print(f"{color}{text}{colors.reset}")
@@ -138,104 +139,107 @@ def startswithnum(num):
         return False
 
 def play(file, playbackMode="normal"):
-    global netStream
-    if not file.startswith("https://"):
-        if platform.system() == "Windows":
+    try:
+        global netStream
+        if not file.startswith("https://"):
+            if platform.system() == "Windows":
+                prefix = ""
+            else: # Posix
+                prefix = "file://"
+            netStream = False
+        else:
             prefix = ""
-        else: # Posix
-            prefix = "file://"
-        netStream = False
-    else:
-        prefix = ""
-        netStream = True
-    player = vlc.MediaPlayer(f'{prefix}{file}')
-    player.play()
-    counter = 0
-    seconds = 0
-    interval = 0.1
-    nextTime = time.time() + interval
-    paused = False
-    global currentpause
-    currentpause = False
-    length = player.get_length() / 1000
+            netStream = True
+        player = vlc.MediaPlayer(f'{prefix}{file}')
+        player.play()
+        counter = 0
+        seconds = 0
+        interval = 0.1
+        nextTime = time.time() + interval
+        paused = False
+        global currentpause
+        currentpause = False
+        length = player.get_length() / 1000
 
-    if netStream is False:
-        file = os.path.basename(file)
-        file = Path(file).stem
-    else:
-        file = file.removeprefix("https://")
-
-    renderUI(file, seconds, length, playbackMode)
-
-    while True:
-        if currentpause is False:
-            if counter == 10:
-                counter = counter + 1
-                length = player.get_length() / 1000
-                seconds = seconds + 1
-                counter = 0
-                renderUI(file, seconds, length, playbackMode)
-            global volume
         if netStream is False:
-            if seconds > length:
-                if seconds > 2:
-                    print("Finished!")
-                    player.stop()
-                    break
-            paused = False
+            file = os.path.basename(file)
+            file = Path(file).stem
+        else:
+            file = file.removeprefix("https://")
 
-        char = get_nonblocking_input()
-        if char == keybinds.exitKey:
-            clear()
-            sys.exit(0)
-        if char == keybinds.skip:
-            player.stop()
-            return
-        if char == keybinds.restart:
-            player.stop()
-            return "restart"
-        if char == keybinds.pause:
-            paused = True
-            if paused is True:
-                print(paused, currentpause)
-                if currentpause is False:
-                    player.pause()
-                    currentpause = True
-                else:
-                    player.pause()
-                    currentpause = False
+        renderUI(file, seconds, length, playbackMode)
+        while True:
+            if currentpause is False:
+                if counter == 10:
+                    counter = counter + 1
+                    length = player.get_length() / 1000
+                    seconds = seconds + 1
+                    counter = 0
+                    renderUI(file, seconds, length, playbackMode)
+                global volume
+            if netStream is False:
+                if seconds > length:
+                    if seconds > 2:
+                        print("Finished!")
+                        player.stop()
+                        break
+                paused = False
+
+            char = get_nonblocking_input()
+            if char == keybinds.exitKey:
+                clear()
+                sys.exit(0)
+            if char == keybinds.skip:
+                player.stop()
+                return
+            if char == keybinds.restart:
+                player.stop()
+                return "restart"
+            if char == keybinds.pause:
+                paused = True
+                if paused is True:
+                    print(paused, currentpause)
+                    if currentpause is False:
+                        player.pause()
+                        currentpause = True
+                    else:
+                        player.pause()
+                        currentpause = False
+                    renderUI(file, seconds, length, playbackMode)
+                paused = False
+            if char == keybinds.volUp:
+                volume = volume + read("VolumeControl")
+                player.audio_set_volume(volume)
                 renderUI(file, seconds, length, playbackMode)
-            paused = False
-        if char == keybinds.volUp:
-            volume = volume + read("VolumeControl")
-            player.audio_set_volume(volume)
-            renderUI(file, seconds, length, playbackMode)
-        if char == keybinds.volDown:
-            volume = volume - read("VolumeControl")
-            player.audio_set_volume(volume)
-            renderUI(file, seconds, length, playbackMode)
-        if char == keybinds.streamKey:
-            player.stop()
-            return "netStream"
-        if char == keybinds.loop:
-            global looping
-            if looping is False:
-                looping = True
-            else:
-                looping = False
-            renderUI(file, seconds, length, playbackMode)
-        if char == keybinds.navKey:
-            paused = True
-            currentpause = True
-            player.stop()
-            songNav()
-            currentpause = False
-            player.play()
+            if char == keybinds.volDown:
+                volume = volume - read("VolumeControl")
+                player.audio_set_volume(volume)
+                renderUI(file, seconds, length, playbackMode)
+            if char == keybinds.streamKey:
+                player.stop()
+                return "netStream"
+            if char == keybinds.loop:
+                global looping
+                if looping is False:
+                    looping = True
+                else:
+                    looping = False
+                renderUI(file, seconds, length, playbackMode)
+            if char == keybinds.navKey:
+                paused = True
+                currentpause = True
+                player.stop()
+                songNav()
+                currentpause = False
+                player.play()
 
-        if currentpause is False:
-            time.sleep(max(0, nextTime - time.time()))
-            nextTime += interval
-            counter = counter + 1
+            if currentpause is False:
+                time.sleep(max(0, nextTime - time.time()))
+                nextTime += interval
+                counter = counter + 1
+    except KeyboardInterrupt:
+        player.stop()
+        sys.exit(0)
 
 def progressBar(current, end):
     terminalX = os.get_terminal_size().columns
@@ -388,6 +392,7 @@ def newUser():
 
 def playLoop():
     endCode = ""
+    time.sleep(0.25)
     while True:
         mode = "normal"
         if looping is False:
