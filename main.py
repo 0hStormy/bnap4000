@@ -36,10 +36,23 @@ renderedLines = 0
 global openPrompt
 openPrompt = False
 
+# Smart print
+def sprint(text):
+    termX = os.get_terminal_size().columns
+    diff = termX - len(text)
+    if len(text) > termX:
+        print(text[:-(diff+1)])
+    else:
+        print(text)
 
 # Color printing
 def cprint(text, color):
-    print(f"{color}{text}{colors.reset}")
+    termX = os.get_terminal_size().columns
+    diff = termX - len(text)
+    if len(text) > termX:
+        print(f"{color}{text[:-(diff+1)]}{colors.reset}")
+    else:
+        print(f"{color}{text}{colors.reset}")
     global renderedLines
     renderedLines = renderedLines + 1
 
@@ -128,7 +141,7 @@ def cliParse():
             play(sys.argv[1], "direct")
             sys.exit(0)
         else:
-            print("Invalid file")
+            sprint("Invalid file")
             sys.exit(1)
 
 def startswithnum(num):
@@ -180,7 +193,7 @@ def play(file, playbackMode="normal"):
             if netStream is False:
                 if seconds > length:
                     if seconds > 2:
-                        print("Finished!")
+                        sprint("Finished!")
                         player.stop()
                         break
                 paused = False
@@ -198,7 +211,7 @@ def play(file, playbackMode="normal"):
             if char == keybinds.pause:
                 paused = True
                 if paused is True:
-                    print(paused, currentpause)
+                    sprint(paused, currentpause)
                     if currentpause is False:
                         player.pause()
                         currentpause = True
@@ -304,7 +317,7 @@ def songNav():
                     totalSongs += 1
                     queue.append(f"{cwd}/{selectedAlbum}/{file}")
             queue.sort()
-            print(read("QueueLength") - totalSongs)
+            sprint(read("QueueLength") - totalSongs)
             addToQueue(read("QueueLength") - totalSongs)
             playLoop()
 
@@ -323,19 +336,19 @@ def renderUI(file, seconds, length, playbackMode):
             cprint(f"{icons.musicNote}{locale("ui.station")}: {file}", colors.green)
         else:
             cprint(f"{icons.musicNote}{locale("ui.song")}: {file}", colors.green)
-        print(f"{pauseIcon}{seconds}s/{round(length)}s")
-        print(f"{icons.vol}{locale("ui.volume")}: {volume}")
-        print(f"{icons.loop}{locale("ui.looping")}: {looping}")
+        sprint(f"{pauseIcon}{seconds}s/{round(length)}s")
+        sprint(f"{icons.vol}{locale("ui.volume")}: {volume}")
+        sprint(f"{icons.loop}{locale("ui.looping")}: {looping}")
         drawLine()
         progressBar(seconds, length)
         drawLine()
         index = 0
         if playbackMode != "direct":
-            print(f"{icons.queue}{locale("ui.queue")}:")
+            sprint(f"{icons.queue}{locale("ui.queue")}:")
             for songs in queue:
                 index = index + 1
                 songs = Path(songs).stem
-                cprint(f"   {index}: {os.path.basename(songs)}", colors.blue)
+                cprint(f"{index}: {os.path.basename(songs)}", colors.blue)
             drawLine()
 
 def get_nonblocking_input():
