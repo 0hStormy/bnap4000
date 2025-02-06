@@ -64,7 +64,7 @@ def createConf():
         "QueueLength": 16,
         "NerdFontSupport": False,
         "Loop": False,
-        "Locale": "en_US",
+        "Locale": "en",
         "skipKey": "z",
         "pauseKey": " ",
         "volUpKey": "=",
