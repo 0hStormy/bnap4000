@@ -33,7 +33,8 @@ Now that you think that this project is pretty cool, let's install the dang thin
 
 1. Make sure you have VLC installed, you can get it from https://www.videolan.org/vlc/ or through your package manager such as `apt` or `winget`
 2. Download the program from the [releases](https://github.com/0hStormy/bnap4000/releases) tab.
-3. If you want fancy icons in bnap4000, make sure to install and use a Nerd Font of your choice.
+3. Either run directly or move it to a folder in your PATH such as `/usr/local/bin/`
+4. If you want fancy icons in bnap4000, make sure to install and use a [Nerd Font](https://www.nerdfonts.com/font-downloads) of your choice.
 
     If you're on Linux make sure to install VLC as a system package so bnap4000 can access libraries!
 
