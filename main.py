@@ -59,7 +59,8 @@ def createConf():
         "restartKey": "x",
         "loopKey": "l",
         "exitKey": "q",
-        "streamKey": "n"
+        "streamKey": "n",
+        "songselectKey": "s"
     }
     with open(f"{homeFolder}/.bnap/config.json", "w") as f:
         converted = json.dumps(newConf, indent=4)
@@ -432,7 +433,7 @@ class keybinds:
     loop = read("loopKey")
     exitKey = read("exitKey")
     streamKey = read("streamKey")
-    navKey = "s"
+    navKey = read("songselectKey")
 
 class icons:
     if read("NerdFontSupport") is True:

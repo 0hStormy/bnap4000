@@ -86,6 +86,7 @@ py -m nuitka --standalone --onefile main.py # Only runs up to Python 3.12 curren
 * `=` to make volume higher
 * `X` to restart the current song
 * `L` to toggle looping
+* `S` to open song selection menu (`pa` to play selected album from menu)
 * `Q` to quit
 
 # Credits
