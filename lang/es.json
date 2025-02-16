@@ -7,7 +7,7 @@
     "ui.iradio": "URL de Radio en Línea",
     "ui.songSelect": "Selector de Canción/Álbum",
 
-    "welcome.welcome": "¡Dar la bienvenida bnap400! ¡Respondamos un par de preguntas para comenzar!",
+    "welcome.welcome": "¡Dar la bienvenida bnap4000! ¡Respondamos un par de preguntas para comenzar!",
     "welcome.confignote": "Archivo de config se encuentra en ~/.bnap/config.json si alguna vez necesitas cambiar algo.",
     "welcome.library": "Ubicación de biblioteca de música (dejar por defecto)",
     "welcome.musLib": "Configure la biblioteca de música en:",
